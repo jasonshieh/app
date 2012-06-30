@@ -13,7 +13,9 @@ import android.widget.TextView;
 
 import com.jason.app.R;
 public class AdapterApps extends BaseAdapter{
-	
+	/**
+	 * apps installed
+	 */
 	private List<ApplicationInfo> mApps;
 	private Context mContext;
 	public AdapterApps(Context context, List<ApplicationInfo> apps){
