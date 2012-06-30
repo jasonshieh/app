@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -83,40 +82,58 @@ public class AppActivity extends Activity {
 			public void run() {
 		        PackageManager manager = AppActivity.this.getPackageManager();
 		        mApps = manager.getInstalledApplications(0);
+		        for(int i = mApps.size() - 1; i >= 0; i--){
+		        	if((mApps.get(i).flags & ApplicationInfo.FLAG_SYSTEM) != 0){
+		        		mApps.remove(i);
+		        	}
+		        }
 		        mHandler.sendEmptyMessage(MSG_LOAD_COMPLETE);
 			}
 		});
     }
     
-	private void showMenu(View mMenuButton) {
-		if (null == mMenuPopupWindow) {
-			ViewGroup pop = (ViewGroup)LayoutInflater.from(this).inflate(R.layout.main_menupop_window, null);
-
-//			// 监听事件
-//			pop.findViewById(R.id.main_menu_checkupdate_button).setOnClickListener(mTitlebarListener);
-//			pop.findViewById(R.id.main_menu_exit_button).setOnClickListener(mTitlebarListener);
-
-			mMenuPopupWindow = new PopupWindow(pop, pop.getChildAt(0).getLayoutParams().width, pop.getChildAt(0).getLayoutParams().height, true);
-			mMenuPopupWindow.setOutsideTouchable(true);
-
-			mMenuPopupWindow.setOutsideTouchable(true);
-			// 不会阻碍其他控件的触摸
-			mMenuPopupWindow.setTouchable(false);
-			mMenuPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-		}
-		if (!mMenuPopupWindow.isShowing()) {
-			mMenuPopupWindow.showAsDropDown(mMenuButton, 
-					0,
-					- mMenuButton.getHeight());
-		}
+	private void showMenu(View mMenuButton, final String packageName) {
+		ViewGroup pop = (ViewGroup)LayoutInflater.from(this).inflate(R.layout.main_menupop_window, null);
+		
+		// 监听事件
+		pop.findViewById(R.id.main_menu_checkupdate_button).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				CommonHelper.canLaunch(AppActivity.this, packageName);
+			}
+		});
+		pop.findViewById(R.id.main_menu_exit_button).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				CommonHelper.uninstallApk(AppActivity.this, packageName);
+			}
+		});
+		pop.findViewById(R.id.main_menu_detail).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				CommonHelper.showInstalledAppDetails(AppActivity.this, packageName);
+			}
+		});
+		mMenuPopupWindow = new PopupWindow(pop, pop.getChildAt(0).getLayoutParams().width, pop.getChildAt(0).getLayoutParams().height, true);
+		
+		mMenuPopupWindow.setOutsideTouchable(true);
+		// 不会阻碍其他控件的触摸
+		mMenuPopupWindow.setTouchable(true);
+		mMenuPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		mMenuPopupWindow.showAsDropDown(mMenuButton, 
+				mMenuButton.getWidth()/2 - mMenuPopupWindow.getWidth()/2,
+				- mMenuButton.getHeight());
 	}
 	
 	private GridView.OnItemClickListener mTitlebarListener = new GridView.OnItemClickListener() {
 
 		@Override
-		public void onItemClick(AdapterView<?> arg0, View mMenuButton, int arg2,
+		public void onItemClick(AdapterView<?> arg0, View mMenuButton, int position,
 				long arg3) {
-			showMenu(mMenuButton);
+			showMenu(mMenuButton, mApps.get(position).packageName);
 			
 		}
 	};

@@ -10,6 +10,7 @@
         android:layout_width="53dp"
     	android:layout_height="53dp"
     	android:layout_gravity="center_horizontal"
+        android:padding="5dip"
         />
     <TextView 
         android:id="@+id/app_label"
@@ -19,6 +20,7 @@
     	android:singleLine="true"
     	android:ellipsize="marquee"
         android:textColor="#ff000000"
+        android:padding="5dip"
     	/>
 
 </LinearLayout>
