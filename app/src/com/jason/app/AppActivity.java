@@ -1,17 +1,33 @@
 package com.jason.app;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
-import java.util.List;
+import android.widget.PopupWindow;
 
 import com.jason.adapters.AdapterApps;
+import com.jason.util.CommonHelper;
 import com.jason.util.ThreadManager;
 public class AppActivity extends Activity {
+
+
+	/**
+	 * 菜单弹出框
+	 */
+	private PopupWindow mMenuPopupWindow;
 	
 	/**
 	 * 本地已安装软件的列表
@@ -60,6 +76,7 @@ public class AppActivity extends Activity {
      * 2012-6-30 | 下午12:50:48 | Jason Shieh
      */
     private void initEvents(){
+    	mGridViewApps.setOnItemClickListener(mTitlebarListener);
     	ThreadManager.postTask(new Runnable() {
 			
 			@Override
@@ -70,4 +87,37 @@ public class AppActivity extends Activity {
 			}
 		});
     }
+    
+	private void showMenu(View mMenuButton) {
+		if (null == mMenuPopupWindow) {
+			ViewGroup pop = (ViewGroup)LayoutInflater.from(this).inflate(R.layout.main_menupop_window, null);
+
+//			// 监听事件
+//			pop.findViewById(R.id.main_menu_checkupdate_button).setOnClickListener(mTitlebarListener);
+//			pop.findViewById(R.id.main_menu_exit_button).setOnClickListener(mTitlebarListener);
+
+			mMenuPopupWindow = new PopupWindow(pop, pop.getChildAt(0).getLayoutParams().width, pop.getChildAt(0).getLayoutParams().height, true);
+			mMenuPopupWindow.setOutsideTouchable(true);
+
+			mMenuPopupWindow.setOutsideTouchable(true);
+			// 不会阻碍其他控件的触摸
+			mMenuPopupWindow.setTouchable(false);
+			mMenuPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		}
+		if (!mMenuPopupWindow.isShowing()) {
+			mMenuPopupWindow.showAsDropDown(mMenuButton, 
+					0,
+					- mMenuButton.getHeight());
+		}
+	}
+	
+	private GridView.OnItemClickListener mTitlebarListener = new GridView.OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View mMenuButton, int arg2,
+				long arg3) {
+			showMenu(mMenuButton);
+			
+		}
+	};
 }
