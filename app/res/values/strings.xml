@@ -3,5 +3,5 @@
 
     <string name="hello">Hello World, AppActivity!</string>
     <string name="app_name">小笼包</string>
-
+    <string name="goto_market">免费市场</string>
 </resources>

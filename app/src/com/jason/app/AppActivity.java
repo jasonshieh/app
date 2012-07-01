@@ -2,7 +2,10 @@ package com.jason.app;
 
 import java.util.List;
 
+import net.youmi.android.appoffers.EarnedPointsNotifier;
+import net.youmi.android.appoffers.YoumiOffersManager;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -13,10 +16,10 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.jason.adapters.AdapterApps;
 import com.jason.util.CommonHelper;
@@ -33,6 +36,7 @@ public class AppActivity extends Activity {
 	 * 本地已安装软件的列表
 	 */
 	private GridView mGridViewApps;
+	private TextView mTextViewGotoMarket;
 	
 	private final static int MSG_LOAD_COMPLETE = 0;
 	private List<ApplicationInfo> mApps;
@@ -55,6 +59,7 @@ public class AppActivity extends Activity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	YoumiOffersManager.init(this, com.jason.util.Constants.DEV_ID, com.jason.util.Constants.SOFT_ID);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         initViews();
@@ -68,6 +73,7 @@ public class AppActivity extends Activity {
      */
     private void initViews(){
     	mGridViewApps = (GridView) findViewById(R.id.gridview_app);
+    	mTextViewGotoMarket = (TextView) findViewById(R.id.goto_market);
     }
     
     /**
@@ -89,6 +95,13 @@ public class AppActivity extends Activity {
 		        	}
 		        }
 		        mHandler.sendEmptyMessage(MSG_LOAD_COMPLETE);
+			}
+		});
+    	mTextViewGotoMarket.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				YoumiOffersManager.showOffers(AppActivity.this, YoumiOffersManager.TYPE_REWARDLESS_APPLIST, null);
 			}
 		});
     }
